@@ -3,8 +3,8 @@ require "yaml"
 class ChangelogCli < Formula
   desc "A simple opinionated CLI to generate changelog based on the conventional commit history."
   homepage "https://github.com/orestesgaolin/dart_utilities"
-  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/changelog_cli-v0.2.0.tar.gz"
-  sha256 "02e1075cb133ec50147adaec7492fe5e92e6db86ebec471359a8e39384892806"
+  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/changelog_cli-v0.3.0.tar.gz"
+  sha256 "710cfe16cc4ae843a8e1c65f5538f145688a343b063f9cf82e2a97a37ad4d449"
   license "MIT"
 
   depends_on "dart-lang/dart/dart" => :build
