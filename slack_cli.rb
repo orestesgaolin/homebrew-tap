@@ -1,6 +1,6 @@
 require "yaml"
 
-class Mason < Formula
+class SlackCli < Formula
   desc "A simple opinionated CLI to send messages to Slack."
   homepage "https://github.com/orestesgaolin/dart_utilities"
   url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/slack_cli-v0.1.0.tar.gz"
@@ -20,7 +20,7 @@ class Mason < Formula
   
     _install_script_snapshot
 
-    chmod 0555, "#{bin}/mason"
+    chmod 0555, "#{bin}/slack_cli"
   end
 
   private
