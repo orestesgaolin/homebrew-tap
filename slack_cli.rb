@@ -13,8 +13,8 @@ class SlackCli < Formula
     # Tell the pub server where these installations are coming from.
     ENV["PUB_ENVIRONMENT"] = "homebrew:slack_cli"
 
-    # Change directories into the mason_cli package directory.
-    Dir.chdir('packages/slack_cli')
+    # Change directories into the slack_cli package directory.
+    Dir.chdir('slack_cli')
 
     system _dart/"dart", "pub", "get"
   
