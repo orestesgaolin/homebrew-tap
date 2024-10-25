@@ -21,10 +21,10 @@ class ChangelogCli < Formula
                     when "changelog_cli.exe" then "74403174a30aab9040415b6b1489a067f1e2dc06c63e806e10b5ec71aee7df34"
                     end
 
-    # Download the appropriate binary for the system
-    system "curl", "-L", binary_url, "-o", "changelog_cli"
-    chmod 0555, "changelog_cli"
-    bin.install "changelog_cli"
+    # Use full path to avoid conflicts
+    system "curl", "-L", binary_url, "-o", "#{buildpath}/changelog_cli_bin"
+    chmod 0555, "#{buildpath}/changelog_cli_bin"
+    bin.install "#{buildpath}/changelog_cli_bin" => "changelog_cli"
   end
 
   test do
