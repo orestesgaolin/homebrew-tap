@@ -1,8 +1,8 @@
 class ChangelogCli < Formula
   desc "A simple opinionated CLI to generate changelog based on the conventional commit history."
   homepage "https://github.com/orestesgaolin/dart_utilities"
-  # url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/changelog_cli-v0.5.1.tar.gz"
-  # sha256 "1cf8469c262791fd1ed780f0f4ca6c24835ac56abb8845efed08ea2592212c97"
+  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/changelog_cli-v0.5.1.tar.gz"
+  sha256 "1cf8469c262791fd1ed780f0f4ca6c24835ac56abb8845efed08ea2592212c97"
   license "MIT"
 
   def install
