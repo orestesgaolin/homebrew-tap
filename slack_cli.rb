@@ -3,8 +3,8 @@ require "yaml"
 class SlackCli < Formula
   desc "A simple opinionated CLI to send messages to Slack."
   homepage "https://github.com/orestesgaolin/dart_utilities"
-  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/slack_cli-v0.1.0.tar.gz"
-  sha256 "7647b6b9919c25c8d042401f6ff467c433773c4ffa40144ec4a5e37ded60ec1f"
+  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/slack_cli-v0.2.0.tar.gz"
+  sha256 "a4e1b2f9eb6cb26394e6b3f40008601ba8d6bf857a429dbb7bd08c86f8018f7b"
   license "MIT"
 
   depends_on "dart-lang/dart/dart" => :build
