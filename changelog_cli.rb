@@ -13,7 +13,7 @@ class ChangelogCli < Formula
                     OS.linux? ? "changelog_cli_linux" : "changelog_cli.exe"
                   end
                   
-    binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/changelog_cli-v0.6.0/#{binary_name}"
+    binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/changelog_cli-v0.7.0/#{binary_name}"
     binary_sha256 = case binary_name
                     when "changelog_cli_macos" then "8d76ce548f89a894b545adfff5e832857d9da7a734ae6222986e36a5152b68fa"
                     when "changelog_cli_macos_x86" then "949f84cbf105fa010c44c197019831100959f55b2619b72c5a8e953570d50b36"
