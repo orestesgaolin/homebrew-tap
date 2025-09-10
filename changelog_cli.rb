@@ -1,8 +1,8 @@
 class ChangelogCli < Formula
   desc "A simple opinionated CLI to generate changelog based on the conventional commit history."
   homepage "https://github.com/orestesgaolin/dart_utilities"
-  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/changelog_cli-v0.6.0.tar.gz"
-  sha256 "77d7c67e5aa06c066c0f70313df322f255d1c0bcb8c3d4b4baef0d3ce961023f"
+  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/changelog_cli-v0.7.0.tar.gz"
+  sha256 "b448d137d4c8512f65e622913adc1d792c75e7fb99728bd0e1c473515ba926cf"
   license "MIT"
 
   def install
@@ -15,10 +15,10 @@ class ChangelogCli < Formula
                   
     binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/changelog_cli-v0.6.0/#{binary_name}"
     binary_sha256 = case binary_name
-                    when "changelog_cli_macos" then "c418bba1282b9869215653f0f069d48b670da65b5f0bc447ef2c0b931a7ba33f"
-                    when "changelog_cli_macos_x86" then "ff9a9620759e4283403bbcc2ca970f5be5d57b9efeae1a7fe3cea4713b48eec9"
-                    when "changelog_cli_linux" then "8380fca842b5b91f02f9da42a9d10aaa669b9d32fddc30d3b5804bd552cdf5b4"
-                    when "changelog_cli.exe" then "873d6416d13e107b8f08624ec817f2f7cea74f827b723f1c7d301844fc84f10e"
+                    when "changelog_cli_macos" then "8d76ce548f89a894b545adfff5e832857d9da7a734ae6222986e36a5152b68fa"
+                    when "changelog_cli_macos_x86" then "949f84cbf105fa010c44c197019831100959f55b2619b72c5a8e953570d50b36"
+                    when "changelog_cli_linux" then "2f4011741f73e2fbb99188d361f5e615cd9372a022cf5f5c5febd4e2f021f67a"
+                    when "changelog_cli.exe" then ""
                     end
 
     # Use full path to avoid conflicts
