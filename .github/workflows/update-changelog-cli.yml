@@ -1,0 +1,68 @@
+name: Update changelog_cli Formula
+on:
+  workflow_dispatch:
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Fetch latest changelog_cli release
+        id: fetch_release
+        run: |
+          latest_release=$(curl -s https://api.github.com/repos/orestesgaolin/dart_utilities/releases | jq -r '[.[] | select(.tag_name | startswith("changelog_cli-v"))][0].tag_name')
+          echo "latest_release=$latest_release" >> $GITHUB_OUTPUT
+
+      - name: Download source tarball and calculate sha256
+        id: get_sha
+        run: |
+          url="https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/${{ steps.fetch_release.outputs.latest_release }}.tar.gz"
+          curl -L "$url" -o source.tar.gz
+          sha256=$(shasum -a 256 source.tar.gz | awk '{print $1}')
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "sha256=$sha256" >> $GITHUB_OUTPUT
+
+      - name: Download binaries and calculate checksums
+        id: get_binaries
+        run: |
+          set -e
+          tag="${{ steps.fetch_release.outputs.latest_release }}"
+          declare -A binaries
+          binaries["changelog_cli_macos"]=""
+          binaries["changelog_cli_macos_x86"]=""
+          binaries["changelog_cli_linux"]=""
+          binaries["changelog_cli.exe"]=""
+          for bin in "${!binaries[@]}"; do
+            url="https://github.com/orestesgaolin/dart_utilities/releases/download/$tag/$bin"
+            curl -L "$url" -o "$bin"
+            checksum=$(shasum -a 256 "$bin" | awk '{print $1}')
+            echo "$bin=$checksum" >> $GITHUB_OUTPUT
+          done
+
+      - name: Update changelog_cli.rb
+        run: |
+          sed -i "s|url \".*\"|url \"${{ steps.get_sha.outputs.url }}\"|" changelog_cli.rb
+          sed -i "s|sha256 \".*\"|sha256 \"${{ steps.get_sha.outputs.sha256 }}\"|" changelog_cli.rb
+          sed -i "s|when \"changelog_cli_macos\" then \"[a-f0-9]\{64\}\"|when \"changelog_cli_macos\" then \"${{ steps.get_binaries.outputs.changelog_cli_macos }}\"|" changelog_cli.rb
+          sed -i "s|when \"changelog_cli_macos_x86\" then \"[a-f0-9]\{64\}\"|when \"changelog_cli_macos_x86\" then \"${{ steps.get_binaries.outputs.changelog_cli_macos_x86 }}\"|" changelog_cli.rb
+          sed -i "s|when \"changelog_cli_linux\" then \"[a-f0-9]\{64\}\"|when \"changelog_cli_linux\" then \"${{ steps.get_binaries.outputs.changelog_cli_linux }}\"|" changelog_cli.rb
+          sed -i "s|when \"changelog_cli.exe\" then \"[a-f0-9]\{64\}\"|when \"changelog_cli.exe\" then \"${{ steps.get_binaries.outputs.changelog_cli.exe }}\"|" changelog_cli.rb
+
+      - name: Commit and tag changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add changelog_cli.rb
+          version="${{ steps.fetch_release.outputs.latest_release }}"
+          git commit -m "chore: update changelog_cli formula to $version"
+          git tag "$version"
+          git push origin main --tags
