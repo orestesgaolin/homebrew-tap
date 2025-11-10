@@ -1,0 +1,95 @@
+name: Update slack_cli Formula
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Print environment info
+        run: |
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
+          env | sort
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Fetch latest slack_cli release
+        id: fetch_release
+        run: |
+          echo "Fetching latest slack_cli release..."
+          releases_json=$(curl -s https://api.github.com/repos/orestesgaolin/dart_utilities/releases)
+          echo "Releases JSON: $releases_json" | head -c 1000
+          latest_release=$(echo "$releases_json" | jq -r '[.[] | select(.tag_name | startswith("slack_cli-v"))][0].tag_name')
+          echo "Latest release tag: $latest_release"
+          echo "latest_release=$latest_release" >> $GITHUB_OUTPUT
+
+      - name: Download source tarball and calculate sha256
+        id: get_sha
+        run: |
+          url="https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/${{ steps.fetch_release.outputs.latest_release }}.tar.gz"
+          echo "Downloading source tarball from $url"
+          curl -L "$url" -o source.tar.gz
+          echo "Calculating sha256 for source.tar.gz..."
+          sha256=$(shasum -a 256 source.tar.gz | awk '{print $1}')
+          echo "Source tarball sha256: $sha256"
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "sha256=$sha256" >> $GITHUB_OUTPUT
+
+      - name: Download binaries and calculate checksums
+        id: get_binaries
+        run: |
+          set -e
+          tag="${{ steps.fetch_release.outputs.latest_release }}"
+          declare -A binaries
+          binaries["slack_cli_macos"]=""
+          binaries["slack_cli_macos_x86"]=""
+          binaries["slack_cli_linux"]=""
+          binaries["slack_cli.exe"]=""
+          for bin in "${!binaries[@]}"; do
+            url="https://github.com/orestesgaolin/dart_utilities/releases/download/$tag/$bin"
+            echo "Downloading binary $bin from $url"
+            curl -L "$url" -o "$bin"
+            echo "Calculating sha256 for $bin..."
+            checksum=$(shasum -a 256 "$bin" | awk '{print $1}')
+            echo "Binary $bin sha256: $checksum"
+            echo "$bin=$checksum" >> $GITHUB_OUTPUT
+          done
+
+      - name: Update slack_cli.rb
+        run: |
+          echo "Updating slack_cli.rb with new release info..."
+          sed -i "s|url \".*\"|url \"${{ steps.get_sha.outputs.url }}\"|" slack_cli.rb
+          sed -i "s|sha256 \".*\"|sha256 \"${{ steps.get_sha.outputs.sha256 }}\"|" slack_cli.rb
+          # Update binary_url tag
+          sed -i "s|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/slack_cli-v[0-9.]*|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/${{ steps.fetch_release.outputs.latest_release }}|" slack_cli.rb
+          sed -i "s|when \"slack_cli_macos\" then \"[a-f0-9]\{64\}\"|when \"slack_cli_macos\" then \"${{ steps.get_binaries.outputs.slack_cli_macos }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli_macos_x86\" then \"[a-f0-9]\{64\}\"|when \"slack_cli_macos_x86\" then \"${{ steps.get_binaries.outputs.slack_cli_macos_x86 }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli_linux\" then \"[a-f0-9]\{64\}\"|when \"slack_cli_linux\" then \"${{ steps.get_binaries.outputs.slack_cli_linux }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli.exe\" then \"[a-f0-9]\{64\}\"|when \"slack_cli.exe\" then \"${{ steps.get_binaries.outputs.slack_cli.exe }}\"|" slack_cli.rb
+
+      - name: Commit and tag changes
+        run: |
+          echo "Committing and tagging changes..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add slack_cli.rb
+          version="${{ steps.fetch_release.outputs.latest_release }}"
+          echo "Committing slack_cli.rb for version $version"
+          git commit -m "chore: update slack_cli formula to $version"
+          echo "Tagging commit with $version"
+          git tag "$version"
+          echo "Pushing changes to main and tags..."
+          git push origin main --tags
