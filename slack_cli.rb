@@ -17,9 +17,9 @@ class SlackCli < Formula
                   
     binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/slack_cli-v0.2.2/#{binary_name}"
     binary_sha256 = case binary_name
-                    when "slack_cli_macos" then ""
-                    when "slack_cli_macos_x86" then ""
-                    when "slack_cli_linux" then ""
+                    when "slack_cli_macos" then "455e9f3d2b1d0fc8286510e9198503226c8c215af65ee210fcd9e752fbaefa93"
+                    when "slack_cli_macos_x86" then "dad645b21a82f703545458aa2a782eb0bedf8b4691e6157a16ac9c26c2c7592b"
+                    when "slack_cli_linux" then "fdf53232d9fdf8fb8e4d473cf93fca5b1eb6239de7bda92e335028d36aa031f2"
                     when "slack_cli.exe" then ""
                     end
 
