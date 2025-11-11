@@ -75,10 +75,10 @@ jobs:
           sed -i "s|sha256 \".*\"|sha256 \"${{ steps.get_sha.outputs.sha256 }}\"|" slack_cli.rb
           # Update binary_url tag
           sed -i "s|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/slack_cli-v[0-9.]*|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/${{ steps.fetch_release.outputs.latest_release }}|" slack_cli.rb
-          sed -i "s|when \"slack_cli_macos\" then \"[a-f0-9]\{64\}\"|when \"slack_cli_macos\" then \"${{ steps.get_binaries.outputs.slack_cli_macos }}\"|" slack_cli.rb
-          sed -i "s|when \"slack_cli_macos_x86\" then \"[a-f0-9]\{64\}\"|when \"slack_cli_macos_x86\" then \"${{ steps.get_binaries.outputs.slack_cli_macos_x86 }}\"|" slack_cli.rb
-          sed -i "s|when \"slack_cli_linux\" then \"[a-f0-9]\{64\}\"|when \"slack_cli_linux\" then \"${{ steps.get_binaries.outputs.slack_cli_linux }}\"|" slack_cli.rb
-          sed -i "s|when \"slack_cli.exe\" then \"[a-f0-9]\{64\}\"|when \"slack_cli.exe\" then \"${{ steps.get_binaries.outputs.slack_cli.exe }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli_macos\" then \"[a-f0-9]*\"|when \"slack_cli_macos\" then \"${{ steps.get_binaries.outputs.slack_cli_macos }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli_macos_x86\" then \"[a-f0-9]*\"|when \"slack_cli_macos_x86\" then \"${{ steps.get_binaries.outputs.slack_cli_macos_x86 }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli_linux\" then \"[a-f0-9]*\"|when \"slack_cli_linux\" then \"${{ steps.get_binaries.outputs.slack_cli_linux }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli.exe\" then \"[a-f0-9]*\"|when \"slack_cli.exe\" then \"${{ steps.get_binaries.outputs.slack_cli.exe }}\"|" slack_cli.rb
 
       - name: Commit and tag changes
         run: |
