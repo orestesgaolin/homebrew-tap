@@ -36,8 +36,25 @@ jobs:
           echo "Latest release tag: $latest_release"
           echo "latest_release=$latest_release" >> $GITHUB_OUTPUT
 
+      - name: Check if formula already targets latest release
+        id: check_version
+        run: |
+          current_release=$(sed -n 's|.*archive/refs/tags/\(.*\)\.tar\.gz.*|\1|p' slack_cli.rb | head -n 1)
+          echo "Current formula release tag: $current_release"
+          if [ "$current_release" = "${{ steps.fetch_release.outputs.latest_release }}" ]; then
+            echo "Formula already targets the latest release."
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Skip when formula is current
+        if: steps.check_version.outputs.needs_update != 'true'
+        run: echo "No update needed for slack_cli.rb"
+
       - name: Download source tarball and calculate sha256
         id: get_sha
+        if: steps.check_version.outputs.needs_update == 'true'
         run: |
           url="https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/${{ steps.fetch_release.outputs.latest_release }}.tar.gz"
           echo "Downloading source tarball from $url"
@@ -50,6 +67,7 @@ jobs:
 
       - name: Download binaries and calculate checksums
         id: get_binaries
+        if: steps.check_version.outputs.needs_update == 'true'
         run: |
           set -e
           tag="${{ steps.fetch_release.outputs.latest_release }}"
@@ -64,11 +82,13 @@ jobs:
             curl -L "$url" -o "$bin"
             echo "Calculating sha256 for $bin..."
             checksum=$(shasum -a 256 "$bin" | awk '{print $1}')
+            output_name=$(echo "$bin" | tr '.-' '__')
             echo "Binary $bin sha256: $checksum"
-            echo "$bin=$checksum" >> $GITHUB_OUTPUT
+            echo "$output_name=$checksum" >> $GITHUB_OUTPUT
           done
 
       - name: Update slack_cli.rb
+        if: steps.check_version.outputs.needs_update == 'true'
         run: |
           echo "Updating slack_cli.rb with new release info..."
           sed -i "s|url \".*\"|url \"${{ steps.get_sha.outputs.url }}\"|" slack_cli.rb
@@ -78,17 +98,27 @@ jobs:
           sed -i "s|when \"slack_cli_macos\" then \"[a-f0-9]*\"|when \"slack_cli_macos\" then \"${{ steps.get_binaries.outputs.slack_cli_macos }}\"|" slack_cli.rb
           sed -i "s|when \"slack_cli_macos_x86\" then \"[a-f0-9]*\"|when \"slack_cli_macos_x86\" then \"${{ steps.get_binaries.outputs.slack_cli_macos_x86 }}\"|" slack_cli.rb
           sed -i "s|when \"slack_cli_linux\" then \"[a-f0-9]*\"|when \"slack_cli_linux\" then \"${{ steps.get_binaries.outputs.slack_cli_linux }}\"|" slack_cli.rb
-          sed -i "s|when \"slack_cli.exe\" then \"[a-f0-9]*\"|when \"slack_cli.exe\" then \"${{ steps.get_binaries.outputs.slack_cli.exe }}\"|" slack_cli.rb
+          sed -i "s|when \"slack_cli.exe\" then \"[a-f0-9]*\"|when \"slack_cli.exe\" then \"${{ steps.get_binaries.outputs.slack_cli_exe }}\"|" slack_cli.rb
 
       - name: Commit and tag changes
+        if: steps.check_version.outputs.needs_update == 'true'
         run: |
           echo "Committing and tagging changes..."
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add slack_cli.rb
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
           version="${{ steps.fetch_release.outputs.latest_release }}"
           echo "Committing slack_cli.rb for version $version"
           git commit -m "chore: update slack_cli formula to $version"
+          if git rev-parse "$version" >/dev/null 2>&1; then
+            echo "Tag $version already exists; pushing commit without creating a new tag."
+            git push origin main
+            exit 0
+          fi
           echo "Tagging commit with $version"
           git tag "$version"
           echo "Pushing changes to main and tags..."

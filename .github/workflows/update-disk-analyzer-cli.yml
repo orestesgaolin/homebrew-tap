@@ -1,4 +1,4 @@
-name: Update changelog_cli Formula
+name: Update disk_analyzer_cli Formula
 on:
   workflow_dispatch:
 
@@ -26,20 +26,20 @@ jobs:
         with:
           ruby-version: '3.2'
 
-      - name: Fetch latest changelog_cli release
+      - name: Fetch latest disk_analyzer_cli release
         id: fetch_release
         run: |
-          echo "Fetching latest changelog_cli release..."
+          echo "Fetching latest disk_analyzer_cli release..."
           releases_json=$(curl -s https://api.github.com/repos/orestesgaolin/dart_utilities/releases)
           echo "Releases JSON: $releases_json" | head -c 1000
-          latest_release=$(echo "$releases_json" | jq -r '[.[] | select(.tag_name | startswith("changelog_cli-v"))][0].tag_name')
+          latest_release=$(echo "$releases_json" | jq -r '[.[] | select(.tag_name | startswith("disk_analyzer_cli-v"))][0].tag_name')
           echo "Latest release tag: $latest_release"
           echo "latest_release=$latest_release" >> $GITHUB_OUTPUT
 
       - name: Check if formula already targets latest release
         id: check_version
         run: |
-          current_release=$(sed -n 's|.*archive/refs/tags/\(.*\)\.tar\.gz.*|\1|p' changelog_cli.rb | head -n 1)
+          current_release=$(sed -n 's|.*archive/refs/tags/\(.*\)\.tar\.gz.*|\1|p' disk_analyzer_cli.rb | head -n 1)
           echo "Current formula release tag: $current_release"
           if [ "$current_release" = "${{ steps.fetch_release.outputs.latest_release }}" ]; then
             echo "Formula already targets the latest release."
@@ -50,7 +50,7 @@ jobs:
 
       - name: Skip when formula is current
         if: steps.check_version.outputs.needs_update != 'true'
-        run: echo "No update needed for changelog_cli.rb"
+        run: echo "No update needed for disk_analyzer_cli.rb"
 
       - name: Download source tarball and calculate sha256
         id: get_sha
@@ -72,10 +72,8 @@ jobs:
           set -e
           tag="${{ steps.fetch_release.outputs.latest_release }}"
           declare -A binaries
-          binaries["changelog_cli_macos"]=""
-          binaries["changelog_cli_macos_x86"]=""
-          binaries["changelog_cli_linux"]=""
-          binaries["changelog_cli.exe"]=""
+          binaries["disk_analyzer_cli_macos_arm64.zip"]=""
+          binaries["disk_analyzer_cli_linux_x64.zip"]=""
           for bin in "${!binaries[@]}"; do
             url="https://github.com/orestesgaolin/dart_utilities/releases/download/$tag/$bin"
             echo "Downloading binary $bin from $url"
@@ -87,18 +85,15 @@ jobs:
             echo "$output_name=$checksum" >> $GITHUB_OUTPUT
           done
 
-      - name: Update changelog_cli.rb
+      - name: Update disk_analyzer_cli.rb
         if: steps.check_version.outputs.needs_update == 'true'
         run: |
-          echo "Updating changelog_cli.rb with new release info..."
-          sed -i "s|url \".*\"|url \"${{ steps.get_sha.outputs.url }}\"|" changelog_cli.rb
-          sed -i "s|sha256 \".*\"|sha256 \"${{ steps.get_sha.outputs.sha256 }}\"|" changelog_cli.rb
-          # Update binary_url tag
-          sed -i "s|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/changelog_cli-v[0-9.]*|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/${{ steps.fetch_release.outputs.latest_release }}|" changelog_cli.rb
-          sed -i "s|when \"changelog_cli_macos\" then \"[a-f0-9]*\"|when \"changelog_cli_macos\" then \"${{ steps.get_binaries.outputs.changelog_cli_macos }}\"|" changelog_cli.rb
-          sed -i "s|when \"changelog_cli_macos_x86\" then \"[a-f0-9]*\"|when \"changelog_cli_macos_x86\" then \"${{ steps.get_binaries.outputs.changelog_cli_macos_x86 }}\"|" changelog_cli.rb
-          sed -i "s|when \"changelog_cli_linux\" then \"[a-f0-9]*\"|when \"changelog_cli_linux\" then \"${{ steps.get_binaries.outputs.changelog_cli_linux }}\"|" changelog_cli.rb
-          sed -i "s|when \"changelog_cli.exe\" then \"[a-f0-9]*\"|when \"changelog_cli.exe\" then \"${{ steps.get_binaries.outputs.changelog_cli_exe }}\"|" changelog_cli.rb
+          echo "Updating disk_analyzer_cli.rb with new release info..."
+          sed -i "s|url \".*\"|url \"${{ steps.get_sha.outputs.url }}\"|" disk_analyzer_cli.rb
+          sed -i "s|sha256 \".*\"|sha256 \"${{ steps.get_sha.outputs.sha256 }}\"|" disk_analyzer_cli.rb
+          sed -i "s|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/disk_analyzer_cli-v[0-9.]*|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/${{ steps.fetch_release.outputs.latest_release }}|" disk_analyzer_cli.rb
+          sed -i "s|when \"disk_analyzer_cli_macos_arm64.zip\" then \"[a-f0-9]*\"|when \"disk_analyzer_cli_macos_arm64.zip\" then \"${{ steps.get_binaries.outputs.disk_analyzer_cli_macos_arm64_zip }}\"|" disk_analyzer_cli.rb
+          sed -i "s|when \"disk_analyzer_cli_linux_x64.zip\" then \"[a-f0-9]*\"|when \"disk_analyzer_cli_linux_x64.zip\" then \"${{ steps.get_binaries.outputs.disk_analyzer_cli_linux_x64_zip }}\"|" disk_analyzer_cli.rb
 
       - name: Commit and tag changes
         if: steps.check_version.outputs.needs_update == 'true'
@@ -106,14 +101,14 @@ jobs:
           echo "Committing and tagging changes..."
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add changelog_cli.rb
+          git add disk_analyzer_cli.rb
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0
           fi
           version="${{ steps.fetch_release.outputs.latest_release }}"
-          echo "Committing changelog_cli.rb for version $version"
-          git commit -m "chore: update changelog_cli formula to $version"
+          echo "Committing disk_analyzer_cli.rb for version $version"
+          git commit -m "chore: update disk_analyzer_cli formula to $version"
           if git rev-parse "$version" >/dev/null 2>&1; then
             echo "Tag $version already exists; pushing commit without creating a new tag."
             git push origin main
