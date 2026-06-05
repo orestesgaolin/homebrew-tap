@@ -1,8 +1,8 @@
 class DiskAnalyzerCli < Formula
   desc "A CLI to analyze disk usage and identify large files and directories."
   homepage "https://github.com/orestesgaolin/dart_utilities"
-  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/disk_analyzer_cli-v1.0.1.tar.gz"
-  sha256 "83d6c9cd643e6e85fcda6c9bb536693adaacf4a92de4212d188bdf5b1ce1d960"
+  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/disk_analyzer_cli-v1.1.1.tar.gz"
+  sha256 "dc65861fa2c61ad6dda326fff446d237cf0202ef4d38100aa3b75594a9662646"
   license "MIT"
 
   def install
@@ -16,10 +16,10 @@ class DiskAnalyzerCli < Formula
                     odie "disk_analyzer_cli is not supported on this platform"
                   end
 
-    binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/disk_analyzer_cli-v1.0.1/#{binary_name}"
+    binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/disk_analyzer_cli-v1.1.1/#{binary_name}"
     binary_sha256 = case binary_name
-                    when "disk_analyzer_cli_macos_arm64.zip" then "32da7f2f27cb5ce8c41bb3a0ded51f2f262d5f07eb31d875c7c98deee4030d46"
-                    when "disk_analyzer_cli_linux_x64.zip" then "3e8a94726fded3044eacdf6931b11636f628079e9e6921d4a4d9fed6ed9643dd"
+                    when "disk_analyzer_cli_macos_arm64.zip" then "c8be37725190e8e0f94292c25949afa3e52113bbb999086dc8013a59238caba7"
+                    when "disk_analyzer_cli_linux_x64.zip" then "6482f82bfe91ad947b2f634fa8011ded8ae0d72a0852d9e7ba548ec294099a9e"
                     end
 
     system "curl", "-L", binary_url, "-o", "#{buildpath}/disk_analyzer_cli.zip"
