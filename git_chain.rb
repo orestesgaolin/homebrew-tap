@@ -1,8 +1,8 @@
 class GitChain < Formula
   desc "Terminal UI to visualize and sync stacked git branch chains and their PRs."
   homepage "https://github.com/orestesgaolin/dart_utilities"
-  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/git_chain-v0.5.0.tar.gz"
-  sha256 "58b1929b749579243133c18033c8115b668030f8d9680a89f0df1524a4624327"
+  url "https://github.com/orestesgaolin/dart_utilities/archive/refs/tags/git_chain-v0.5.6.tar.gz"
+  sha256 "38f17b0ecb47dc8c1e3833feca1a823815e21c3f3ef1eb14bb005e1d5a2f6acf"
   license "MIT"
 
   def install
@@ -16,10 +16,10 @@ class GitChain < Formula
                     odie "git_chain is not supported on this platform"
                   end
 
-    binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/git_chain-v0.5.0/#{binary_name}"
+    binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/git_chain-v0.5.6/#{binary_name}"
     binary_sha256 = case binary_name
-                    when "git_chain_macos_arm64.zip" then "6154ce6f62812ee7c12a85e8b03bdbd45ddac137e0a04565a3126e8a85eeac57"
-                    when "git_chain_linux_x64.zip" then "6a00204ef8bc0981bfd0e561f6392c0e88a05a1d75ce1237615f205ce9c2df55"
+                    when "git_chain_macos_arm64.zip" then "7d1840ba406a73597c99ec27b88c081a8a6458a78de2b2fc3ebf43cd3e3031da"
+                    when "git_chain_linux_x64.zip" then "735833ceb23530197e7550ae6ab3d967c61ba04ee21f73734206f2fbab20161b"
                     end
 
     system "curl", "-L", binary_url, "-o", "#{buildpath}/git_chain.zip"
