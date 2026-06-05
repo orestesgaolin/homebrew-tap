@@ -6,17 +6,18 @@ class GitBranches < Formula
   license "MIT"
 
   def install
-    binary_name = case OS.mac?
-                  when true
-                    Hardware::CPU.intel? ? "git_branches_macos_x86" : "git_branches_macos"
+    binary_name = if OS.mac?
+                    odie "git_branches does not provide an Intel macOS binary" if Hardware::CPU.intel?
+                    "git_branches_macos"
+                  elsif OS.linux?
+                    "git_branches_linux"
                   else
-                    OS.linux? ? "git_branches_linux" : "git_branches.exe"
+                    "git_branches.exe"
                   end
 
     binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/git_branches-v0.1.0/#{binary_name}"
     binary_sha256 = case binary_name
                     when "git_branches_macos" then ""
-                    when "git_branches_macos_x86" then ""
                     when "git_branches_linux" then ""
                     when "git_branches.exe" then ""
                     end

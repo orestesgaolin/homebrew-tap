@@ -6,17 +6,18 @@ class ChangelogCli < Formula
   license "MIT"
 
   def install
-    binary_name = case OS.mac?
-                  when true
-                    Hardware::CPU.intel? ? "changelog_cli_macos_x86" : "changelog_cli_macos"
+    binary_name = if OS.mac?
+                    odie "changelog_cli does not provide an Intel macOS binary" if Hardware::CPU.intel?
+                    "changelog_cli_macos"
+                  elsif OS.linux?
+                    "changelog_cli_linux"
                   else
-                    OS.linux? ? "changelog_cli_linux" : "changelog_cli.exe"
+                    "changelog_cli.exe"
                   end
                   
     binary_url = "https://github.com/orestesgaolin/dart_utilities/releases/download/changelog_cli-v0.9.1/#{binary_name}"
     binary_sha256 = case binary_name
                     when "changelog_cli_macos" then "2ef791dfeb838c1eedea0b526d2d138bd53c40da9637802ee19c1a6325181927"
-                    when "changelog_cli_macos_x86" then "bc037469922a5f191b03c3c62af74908d7a3c1b3da087bc4e8ecf7dbe046db8f"
                     when "changelog_cli_linux" then "67fcab55133a0f7b750eccf930b168cdc328872cc8697b0a638f3795531b81c3"
                     when "changelog_cli.exe" then ""
                     end

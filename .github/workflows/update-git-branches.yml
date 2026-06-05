@@ -73,7 +73,6 @@ jobs:
           tag="${{ steps.fetch_release.outputs.latest_release }}"
           declare -A binaries
           binaries["git_branches_macos"]=""
-          binaries["git_branches_macos_x86"]=""
           binaries["git_branches_linux"]=""
           binaries["git_branches.exe"]=""
           for bin in "${!binaries[@]}"; do
@@ -96,7 +95,6 @@ jobs:
           # Update binary_url tag
           sed -i "s|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/git_branches-v[0-9.]*|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/${{ steps.fetch_release.outputs.latest_release }}|" git_branches.rb
           sed -i "s|when \"git_branches_macos\" then \"[a-f0-9]*\"|when \"git_branches_macos\" then \"${{ steps.get_binaries.outputs.git_branches_macos }}\"|" git_branches.rb
-          sed -i "s|when \"git_branches_macos_x86\" then \"[a-f0-9]*\"|when \"git_branches_macos_x86\" then \"${{ steps.get_binaries.outputs.git_branches_macos_x86 }}\"|" git_branches.rb
           sed -i "s|when \"git_branches_linux\" then \"[a-f0-9]*\"|when \"git_branches_linux\" then \"${{ steps.get_binaries.outputs.git_branches_linux }}\"|" git_branches.rb
           sed -i "s|when \"git_branches.exe\" then \"[a-f0-9]*\"|when \"git_branches.exe\" then \"${{ steps.get_binaries.outputs.git_branches_exe }}\"|" git_branches.rb
 

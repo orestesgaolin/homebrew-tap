@@ -73,7 +73,6 @@ jobs:
           tag="${{ steps.fetch_release.outputs.latest_release }}"
           declare -A binaries
           binaries["changelog_cli_macos"]=""
-          binaries["changelog_cli_macos_x86"]=""
           binaries["changelog_cli_linux"]=""
           binaries["changelog_cli.exe"]=""
           for bin in "${!binaries[@]}"; do
@@ -96,7 +95,6 @@ jobs:
           # Update binary_url tag
           sed -i "s|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/changelog_cli-v[0-9.]*|binary_url = \"https://github.com/orestesgaolin/dart_utilities/releases/download/${{ steps.fetch_release.outputs.latest_release }}|" changelog_cli.rb
           sed -i "s|when \"changelog_cli_macos\" then \"[a-f0-9]*\"|when \"changelog_cli_macos\" then \"${{ steps.get_binaries.outputs.changelog_cli_macos }}\"|" changelog_cli.rb
-          sed -i "s|when \"changelog_cli_macos_x86\" then \"[a-f0-9]*\"|when \"changelog_cli_macos_x86\" then \"${{ steps.get_binaries.outputs.changelog_cli_macos_x86 }}\"|" changelog_cli.rb
           sed -i "s|when \"changelog_cli_linux\" then \"[a-f0-9]*\"|when \"changelog_cli_linux\" then \"${{ steps.get_binaries.outputs.changelog_cli_linux }}\"|" changelog_cli.rb
           sed -i "s|when \"changelog_cli.exe\" then \"[a-f0-9]*\"|when \"changelog_cli.exe\" then \"${{ steps.get_binaries.outputs.changelog_cli_exe }}\"|" changelog_cli.rb
 
