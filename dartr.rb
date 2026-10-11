@@ -1,7 +1,7 @@
 class Dartr < Formula
   desc "Rust port of the Dart analyzer: dart analyze, dart format, language server"
   homepage "https://github.com/orestesgaolin/dartr"
-  version "0.1.0-preview.7"
+  version "0.1.0-preview.8"
   license "BSD-3-Clause"
 
   base_url = "https://github.com/orestesgaolin/dartr/releases/download/v#{version}"
@@ -9,11 +9,11 @@ class Dartr < Formula
   # Default (macOS arm64). Other platforms override it below, or stop in
   # `install` with a clear message.
   url "#{base_url}/dartr-#{version}-aarch64-apple-darwin.tar.gz"
-  sha256 "adc4d2a93a8324145a08f0925991e6f2e2badd59613a01eac3bf41781e89e80a"
+  sha256 "f05f3342ff05cff4ca403e3d0a29124cebaf864c25bd1585423405cf4dd05e96"
 
   on_linux do
     url "#{base_url}/dartr-#{version}-x86_64-unknown-linux-gnu.tar.gz"
-    sha256 "9b8d3e8e2c7cb26417a2f960d1cd28759240ed37414c2c1f36a0d84a8a5291d7"
+    sha256 "de3d6aa1662a56b625150293e937cc56d7582a8aee071d6bf860378e423faa0f"
   end
 
   def install
